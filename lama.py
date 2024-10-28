@@ -1,5 +1,6 @@
+# File: lama.py
 from flask import Flask, request, jsonify
-import requests  # for Ollama API
+import requests
 import threading
 import os
 import time
@@ -37,7 +38,7 @@ def get_doctor_data(doctor_name):
         
         with file_lock:
             try:
-                with open(f"{doctor_name}.txt", 'r') as file:
+                with open(f"data.txt", 'r', encoding='utf-8') as file:
                     data = file.read()
                     doctor_data_cache[doctor_name] = data
                     return data
@@ -54,15 +55,25 @@ def get_or_create_conversation(doctor_name, user_number):
             if doctor_data is None:
                 return None
             
+            # Modified system prompt to be more explicit and restrictive
+            system_message = {
+                "role": "system",
+                "content": (
+                    "Never mention any other doctors or make up any information.\n\n"
+                    "### DOCTOR'S INFORMATION ###\n"
+                    f"{doctor_data}\n\n"
+                    "### STRICT RULES ###\n"
+                    "1. ONLY use the exact information provided above\n"
+                    "2. If asked about anything not in this data, say 'That information i dont have'\n"
+                    "4. Never add or infer information\n"
+                    "5. Never use general medical knowledge - only use what's in the data\n"
+                    "7. If listing items, use bullet points or numbers"
+                    "8. keep the content as short as possible"
+                )
+            }
+            
             conversations[conversation_key] = {
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": f"You are a Doctor AI assistant. You have access to the following information about a doctor: {doctor_data} "
-                                 f"Answer questions based only on provided information (very important). "
-                                 f"If the information is not available in the provided data, respond with 'ask something else'."
-                    }
-                ],
+                "messages": [system_message],
                 "last_access": current_time
             }
         else:
@@ -71,8 +82,6 @@ def get_or_create_conversation(doctor_name, user_number):
         return conversations[conversation_key]["messages"]
 
 def get_ollama_response(messages):
-    """Get response from locally running Ollama instance"""
-    # Format messages for Ollama
     formatted_messages = []
     for msg in messages:
         formatted_messages.append({
@@ -80,20 +89,35 @@ def get_ollama_response(messages):
             "content": msg["content"]
         })
 
-    # Call local Ollama API
+    # Added more chat context to prevent generic responses
+    prefix_message = {
+        "role": "assistant",
+        "content": "I understand that I must only provide information from the given data. I will not mention any other doctors or make up information."
+    }
+    formatted_messages.insert(1, prefix_message)
+
     response = requests.post(
         "http://localhost:11434/api/chat",
         json={
             "model": "llama2",
             "messages": formatted_messages,
-            "stream": False
+            "stream": False,
+            "temperature": 0.6,     # Reduced temperature further
+            "top_p": 0.1,           # More restrictive sampling
+            "num_ctx": 4096,        # Maximum context length
+            "repeat_penalty": 1.2    # Prevent repetitive responses
         }
     )
     
     if response.status_code == 200:
-        return response.json()["message"]["content"]
+        response_content = response.json()["message"]["content"]
+        # Check if response mentions Dr. Smith and return error if it does
+        if "dr. smith" in response_content.lower() or "dr smith" in response_content.lower():
+            return "ERROR: Response contained incorrect doctor reference. Please try your question again."
+        return response_content
     else:
         raise Exception(f"Ollama API error: {response.text}")
+
 
 @lama.route('/ask', methods=['POST'])
 def ask_question():
