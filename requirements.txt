@@ -1,5 +1,8 @@
+Flask
 langchain
-openai
-huggingface_hub
+langchain-community
 python-dotenv
-streamlit
+beautifulsoup4
+requests
+openai
+sentry-sdk

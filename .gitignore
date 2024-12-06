@@ -1,2 +1,6 @@
 /llm_env
 .env
+/doctorsData
+STRUCTURE
+**/__pycache__/
+*.pyc
