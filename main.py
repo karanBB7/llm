@@ -21,7 +21,7 @@ class WebsiteScraper:
             'clinics': []
         }
         self.soup = None
-        self.base_url = 'http://15.206.67.102'
+        self.base_url = 'http://13.235.8.91/'
 
     def clean_text(self, text):
         if text:
@@ -312,7 +312,7 @@ def scrape_doctor():
             return jsonify({'error': 'doctor_username is required'}), 400
 
         doctor_username = data['doctor_username']
-        url = f"http://15.206.67.102/doctor-profile/{doctor_username}"
+        url = f"http://13.235.8.91/doctor-profile/{doctor_username}"
 
         # Initialize and run scraper
         scraper = WebsiteScraper(url)

@@ -301,7 +301,7 @@ class WebsiteScraper:
 
 def main():
     # URL to scrape
-    url = "http://15.206.67.102/doctor-profile/dr-balachandra-bv"
+    url = "http://13.235.8.91/doctor-profile/dr-balachandra-bv"
     
     # Define selectors using only class names
     selectors = {
