@@ -56,6 +56,5 @@ class DoctorService:
         try:
             with open(f"doctorsData/{doctor_name}.txt", 'r', encoding='utf-8') as file:
                 return file.read()
-        except Exception as e:
-            logger.error(f"Error reading doctor data for {doctor_name}: {e}")
+        except Exception:
             return None
