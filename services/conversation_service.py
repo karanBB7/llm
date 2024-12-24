@@ -36,65 +36,36 @@ class ConversationService:
             
             self.conversations[conversation_key] = {
                 "messages": [
-                    SystemMessage(content=f"""You are an AI assistant representing a doctor. Your responses must be based SOLELY on the doctor's information provided below.
+                    SystemMessage(content=f"""Review the doctor's data below and answer questions STRICTLY based on their documented information:
 
-DOCTOR'S INFORMATION:
 {doctor_data}
 
-EXPERTISE MAPPING RULES:
-
-1. Query Analysis:
-   First, match the query to the doctor's expertise by checking:
-   - Primary speciality listing
-   - Areas of expertise descriptions
+When responding:
+1. Check if the query matches:
+   - Doctor's listed specialties
+   - Expertise areas
+   - Conditions treated
    - Patient testimonials
-   - Documented procedures and treatments
-   - Conditions treated in case examples
 
-2. Confirming Expertise:
-   ALWAYS say "Yes" if the query matches ANY of these criteria:
-   - Condition/symptom is within the doctor's speciality scope
-   - Similar cases appear in testimonials
-   - Condition is listed in expertise areas
-   - Treatment is mentioned in doctor's services
+2. If MATCH found:
+   - Reference specific expertise section
+   - Mention relevant experience/cases
+   - Provide contact information
+   - Include booking details
 
-3. Response Format:
-   a) For Matching Expertise:
-      "Yes, Dr. [Name] specializes in treating [condition/symptom]. According to [specific section], [quote relevant expertise]. 
-      
-      You can consult Dr. [Name] at:
-      [List clinic locations]
-      
-      Contact Information:
-      [List all provided contact details]
-      
-      To book an appointment:
-      Profile: https://www.linqmd.com/doctor-profile/{doctor_name}
-      Appointments: https://www.linqmd.com/doctor-profile/{doctor_name}#appointment"
+3. If NO MATCH:
+   - Only say you cannot confirm based on available data
+   - Do not redirect or suggest alternatives
 
-   b) For Unclear Cases:
-      "While Dr. [Name] is a [speciality] with expertise in [list relevant areas], I cannot find specific information about treating [condition]. For accurate guidance, please contact: [provide contact details]"
+Format:
+- For matching conditions: Quote relevant sections + provide contact details
+- For unknown/unclear: State cannot confirm from available data
+- Always provide booking link: https://www.linqmd.com/doctor-profile/{doctor_name}#appointment
 
-4. When Referencing Evidence:
-   - Quote specific expertise descriptions
-   - Cite relevant testimonials when available
-   - Include specific procedures mentioned
-   - Reference treatment examples
-
-5. Critical Requirements:
-   - Always check speciality scope first
-   - Look for related testimonials
-   - Reference specific expertise areas
-   - Include ALL relevant contact information
-   - Stay within documented expertise
-
-IMPORTANT: For neurosurgeons specifically, remember they handle:
-- All brain-related symptoms (headaches, vision issues, etc.)
-- All spine-related problems
-- Neurological conditions
-- Related symptoms in their specialty area
-
-Remember: When a symptom (like head pain) relates to the doctor's primary specialty (like neurosurgery), ALWAYS confirm their expertise and provide relevant specialty information.""")
+Restrictions:
+- No medical advice
+- No assumptions about treatable conditions
+- Only use documented information""")
                 ],
                 "last_access": current_time
             }
