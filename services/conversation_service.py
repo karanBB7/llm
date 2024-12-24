@@ -66,7 +66,7 @@ Restrictions:
 - No medical advice
 - No assumptions about treatable conditions
 - Only use documented information
-- Use phrases like "based on data" or "available information"
+- Never say "based on" or similar phrases
 """)
                 ],
                 "last_access": current_time
