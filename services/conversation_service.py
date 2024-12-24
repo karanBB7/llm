@@ -65,7 +65,9 @@ Format:
 Restrictions:
 - No medical advice
 - No assumptions about treatable conditions
-- Only use documented information""")
+- Only use documented information
+- Use phrases like "based on data" or "available information"
+""")
                 ],
                 "last_access": current_time
             }
